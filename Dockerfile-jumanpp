@@ -1,0 +1,14 @@
+FROM php:8.0-cli-alpine3.14
+
+RUN apk update && apk add --no-cache build-base g++ boost-dev cmake libexecinfo-dev
+RUN wget https://github.com/ku-nlp/jumanpp/releases/download/v2.0.0-rc3/jumanpp-2.0.0-rc3.tar.xz && \
+    tar xf jumanpp-2.0.0-rc3.tar.xz && \
+    cd jumanpp-2.0.0-rc3 && \
+    mkdir bld && \
+    cd bld && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local && \
+    make install && \
+    cd ../.. && \
+    rm -rf jumanpp-2.0.0-rc3*
+
+WORKDIR /var/www/morphological-api

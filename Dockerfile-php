@@ -1,0 +1,32 @@
+FROM php:8.2-fpm
+
+# Install necessary packages for jumanpp
+RUN apt-get update && \
+    apt-get install -y \
+    wget \
+    g++ \
+    cmake \
+    libboost-dev \
+    libboost-filesystem-dev \
+    libboost-system-dev \
+    libboost-regex-dev \
+    bash
+
+# Install pdo_mysql extension
+RUN docker-php-ext-install pdo pdo_mysql
+
+# Install composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Install jumanpp
+RUN wget https://github.com/ku-nlp/jumanpp/releases/download/v2.0.0-rc3/jumanpp-2.0.0-rc3.tar.xz && \
+    tar xf jumanpp-2.0.0-rc3.tar.xz && \
+    cd jumanpp-2.0.0-rc3 && \
+    mkdir bld && \
+    cd bld && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local && \
+    make install && \
+    cd ../.. && \
+    rm -rf jumanpp-2.0.0-rc3*
+
+WORKDIR /var/www/morphological-api
